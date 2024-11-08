@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste da Pilha de Clientes</title>
+</head>
+<body>
+
+    <h1>Teste da Pilha de Clientes</h1>
+
+    <!-- Input para o nome do cliente -->
+    <input type="text" id="nomeCliente" placeholder="Nome do Cliente" />
+
+    <!-- Botões de ação -->
+    <button onclick="adicionarCliente()">Adicionar Cliente</button>
+    <button onclick="removerCliente()">Remover Cliente</button>
+    <button onclick="limparPilha()">Limpar Pilha</button>
+    <button onclick="verificarPilhaVazia()">Verificar se a Pilha está Vazia</button>
+
+    <!-- Área para mostrar os clientes na pilha -->
+    <h2>Clientes na Pilha:</h2>
+    <div id="clientesNaPilha"></div>
+
+    <!-- Área para mostrar o próximo cliente a ser atendido -->
+    <h2>Próximo Cliente:</h2>
+    <div id="proximoCliente"></div>
+
+    <!-- Área para mostrar o estado da pilha -->
+    <h2>Status da Pilha:</h2>
+    <div id="statusPilha"></div>
+
+    <script>
+        // Definição da classe Pilha
+        class Pilha {
+            constructor(tam = 5) {
+                this.dados = [];
+                this.topo = 0;
+                this.tam = tam;
+            }
+
+            push(cliente) {
+                if (!this.isFull()) {
+                    if (cliente && cliente.nome) {
+                        this.dados[this.topo++] = cliente;
+                        return;
+                    } else {
+                        throw new Error("O cliente deve ter uma propriedade 'nome'.");
+                    }
+                }
+                throw new Error("Stackoverflow");
+            }
+
+            pop() {
+                if (!this.isEmpty()) {
+                    this.topo--;
+                    return;
+                }
+                throw new Error("Stackunderflow");
+            }
+
+            peek() {
+                if (!this.isEmpty()) {
+                    return this.dados[this.topo - 1];
+                }
+                throw new Error("A pilha está vazia.");
+            }
+
+            clear() {
+                this.topo = 0;
+            }
+
+            size() {
+                return this.topo;
+            }
+
+            isEmpty() {
+                return this.topo === 0;
+            }
+
+            isFull() {
+                return this.size() === this.tam;
+            }
+
+            toString() {
+                let texto = "";
+                for (let i = 0; i < this.topo; i++) {
+                    texto += this.dados[i].nome + " ";
+                }
+                return texto.trim();
+            }
+        }
+        const pilhaClientes = new Pilha(5);
+
+        function atualizarClientesNaPilha() {
+            const clientesDiv = document.getElementById("clientesNaPilha");
+            clientesDiv.textContent = pilhaClientes.toString();
+            atualizarProximoCliente();
+        }
+
+        function atualizarProximoCliente() {
+            const proximoDiv = document.getElementById("proximoCliente");
+            if (!pilhaClientes.isEmpty()) {
+                proximoDiv.textContent = pilhaClientes.peek().nome;
+            } else {
+                proximoDiv.textContent = "Nenhum cliente na pilha";
+            }
+        }
+
+        function adicionarCliente() {
+            const nome = document.getElementById("nomeCliente").value;
+            if (nome) {
+                try {
+                    pilhaClientes.push({ nome });
+                    atualizarClientesNaPilha();
+                    document.getElementById("nomeCliente").value = "";
+                } catch (error) {
+                    alert(error.message);
+                }
+            } else {
+                alert("Por favor, insira o nome do cliente.");
+            }
+        }
+
+        function removerCliente() {
+            try {
+                pilhaClientes.pop();
+                atualizarClientesNaPilha();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        function limparPilha() {
+            pilhaClientes.clear();
+            atualizarClientesNaPilha();
+        }
+
+        function verificarPilhaVazia() {
+            const statusDiv = document.getElementById("statusPilha");
+            if (pilhaClientes.isEmpty()) {
+                statusDiv.textContent = "A pilha está vazia.";
+            } else {
+                statusDiv.textContent = "A pilha contém clientes.";
+            }
+        }
+        atualizarClientesNaPilha();
+    </script>
+</body>
+</html>
